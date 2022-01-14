@@ -3,22 +3,45 @@ var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'hyfuser',
   password : 'hyfpassword',
-  database : 'company'
+  database : 'meetup'
 });
 
 connection.connect();
-var insert_queries = [
-                    "insert into employees values (106, 'Ibrahim', 2000, '2019-03-10', 'm')",
-                    "insert into employees values (107, 'Ali', 3000, '2019-04-10', 'm')",
-                    ]
 
-for(var i in insert_queries){
-    console.log("Going to run ", insert_queries[i]) // [] subscript operator : Of 
-    connection.query(insert_queries[i], function (error, results, fields) {
+const inviteeData = [`('Andrea', 'Chris')`, `('Maya', 'Chris')`,
+                      `('Marion', 'Chris')`, `('Levon', 'Chris')`,
+                      `('Rima', 'Chris')`];
+const roomData = [`('JS', 101)`, `('C#', 103)`,
+                  `('C', 105)`, `('Python', 107)`,
+                  `('PHP', 109)`];
+const meetingData = [`(2, 'Social Interview', '12:00', '13:00', 1)`,
+                     `(4, 'Tech Interview', '13:00', '13:45', 2)`,
+                     `(6, 'Assignment Interview', '14:00', '14:30', 4)`,
+                     `(8, 'Module Interview', '15:00', '15:20', 2)`,
+                     `(10, 'Graduation Interview', '16:00', '17:20', 1)`];
+let insert_queries = [];
+
+inviteeData.forEach(data => {
+    insert_queries.push(`INSERT IGNORE INTO Invitee (invitee_name, invited_by)
+                        VALUES ${data}`);
+});
+roomData.forEach(data => {
+    insert_queries.push(`INSERT IGNORE INTO Room (room_name, floor_number)
+                        VALUES ${data}`);
+});
+meetingData.forEach(data => {
+    insert_queries.push(`INSERT IGNORE INTO Meeting (meeting_no, meeting_title, starting_time, ending_time, room_no)
+                        VALUES ${data}`);
+});
+
+insert_queries.forEach(query => {
+    console.log("Going to run ", query);
+    connection.query(query, function (error, results, fields) {
         if (error) {
             throw error;
         }
-        console.log("the reply is ", results[0]);
+        console.log(`New Record has been added!`);
     });
-}
+});
+
 connection.end();
