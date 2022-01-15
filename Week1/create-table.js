@@ -2,12 +2,27 @@ const mysql      = require('mysql');
 const connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'hyfuser',
-  password : 'hyfpassword',
-  database : 'meetup',
+  password : 'hyfpassword'
   // port : 3307
 });
 
 connection.connect();
+
+const dbName = 'meetup';
+const database_queries = ['DROP DATABASE IF EXISTS ' + dbName,
+                          'CREATE DATABASE IF NOT EXISTS ' + dbName];
+database_queries.forEach((query, index) => {
+  connection.query(query, function (error, results, fields) {
+    if (error) {
+        throw error;
+    }
+    if (index === 0) {
+      console.log(`Database ${dbName} has been droped!`);
+    } else {
+      console.log(`Database ${dbName} has been created!`);
+    }
+  });
+});
 
 const tablesInfo = [
   {
@@ -29,6 +44,11 @@ const tablesInfo = [
     relation: ['FOREIGN KEY (room_no) REFERENCES Room (room_no))']
   }
 ];
+
+connection.changeUser({database : 'meetup'}, function(err) {
+  if (err) throw err;
+  console.log(`You are connected to ${dbName} Database!`);
+});
 
 tablesInfo.forEach((table) => {
   const create_query = `CREATE TABLE IF NOT EXISTS ${table.tableName} (`;
