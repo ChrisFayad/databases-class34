@@ -1,6 +1,8 @@
+const { config } = require('dotenv');
 const { MongoClient } = require('mongodb');
+require('dotenv/config');
 
-const uri = "mongodb+srv://Chris:HYF_db_22!@hyf-db.qmhra.mongodb.net/world?retryWrites=true&w=majority";
+const uri = process.env.MongoDB_URL;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(async err => {
   const collection = client.db("world").collection("city");
